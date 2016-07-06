@@ -1,0 +1,99 @@
+<head>
+<style>
+.eList{
+	list-style: none;
+}
+
+.box{
+        float: left;
+        width: 100px;
+        height: 100px;
+        border: 2px solid gray;
+        margin: 5px;
+}
+
+.container{
+	width: 400px;
+	height: 200px;
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script src="moment.js"></script>
+<script src="localforage.min.js"></script>
+
+<script type="text/javascript">
+function log(message){
+	var log = $("#log");
+	var litem = $("<li></li>");
+	litem.html(message).appendTo(log);
+}
+$(function(){
+	
+	// var today = moment();
+ //    var tomorrow = today.add('days', 1);
+
+ //   //return moment(tomorrow).format("YYYY-MM-DD");
+	// var yesterday = moment().add('days', -1);
+	// //log.text("yesterday:" + moment(yesterday).format("YYYY-MM-DD"));
+	// yesterday.lang('es');
+	// log.text("yesterday:" + moment(yesterday).day() + " weekday:" + moment(yesterday).weekday() + " weekday name:" + yesterday.format('dddd') + " Report date:" + yesterday.format('DD-MM-YYYY hh:mm'));
+
+	var showList = function(collection){
+		var log = $("#log");
+		for(var i=0; i < collection.length; i++){
+			var person = collection[i];
+			var litem = $("<li></li>");
+			litem.html("name:" + person.name + " grade:" + person.grade).appendTo(log);
+		}
+		
+		
+	}
+	localforage.getItem("StaffCollection").then(function(value){
+		showList(value);
+	});
+	$("#addEntry").on('click',function(){
+		var person = {
+			name : $("#username").val(),
+			grade: $("#grade").val()
+		}
+		
+		localforage.getItem("StaffCollection").then(function(value){
+			var collection = value;
+			collection.push(person);
+			localforage.setItem("StaffCollection",collection).then(function(value){
+				showList(value);
+			});
+		}).catch(function(err){
+			console.log("localforage collection non-existent and will create ....")
+			var collection = [];
+			collection.push(person);
+			localforage.setItem("StaffCollection",collection).then(function(value){
+				showList(value);
+			});
+		});
+
+		
+
+	});
+	
+	
+})
+</script>
+</head>
+<body>
+<div class="container">
+  <div>
+       <b>Name:</b><input type="text" name="name"  id="username">
+  </div>
+  <div>
+  	   <b>Grade:</b><input type="text" name="grade" id="grade">
+  </div>
+  <p>
+  <div>
+    <button id="addEntry" value="addEntry">Add</button>
+  </div>
+  <p>
+  <div><ul id="log" class="eList"></ul></div>
+</div>
+
+</body>
