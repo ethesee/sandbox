@@ -1,0 +1,79 @@
+<html>
+<head>
+<style>
+
+* { margin: 0; padding: 0; }
+html, body { 
+    height: 100%;
+    text-align: center; }
+span { 
+    height: 100%;
+    vertical-align: middle;
+    display: inline-block; }
+.container{
+	width: 300px;
+	height: 300px;
+	vertical-align: middle;
+    display: inline-block;
+}
+
+ul{
+  list-style: none;
+}
+
+#pcontainer{
+	height: 50px;
+	width: 300px;
+	background-color: #ccc;
+	border-radius: 5px;
+}
+
+#progbar{
+	border-radius: 5px;
+	background-color: orange;
+	width: 0;
+	height: 50px;
+	text-align:center;
+	line-height: 50px;
+	vertical-align: middle;
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script src="epromise.js"></script>
+<script type="text/javascript">
+	
+	$(function(){
+	   
+		var promise = new Epromise();
+		var intval = setInterval(function(){
+			var w = $("#progbar").width();
+			w = w + 50;
+			$("#progbar").width(w);
+			if ( w >= 300){
+			  clearInterval(intval);
+			  promise.resolve("Done!");
+			  
+			}
+		},1000);
+	 	
+		promise.then(function(message){
+			$("#progbar").html(message);
+		})
+		promise.fail(function(message){
+			$("#progbar").css({"color": "red"});
+			$("#progbar").html("Promise failure!!!! " + message);
+		});
+	  
+	});
+</script>
+</head>
+<body>
+<span></span>
+<div class="container">
+	<ul id="log"></ul>
+	<div id="pcontainer">
+		<div id="progbar"></div>
+	</div>
+</div>
+</body>
+</html>
