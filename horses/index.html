@@ -1,0 +1,162 @@
+<html>
+<head>
+<style type="text/css">
+	.container{
+		width: 600px;
+		height: 600px;
+		
+	}
+	.eList{
+		list-style: none;
+	}
+
+	.box{
+	        float: left;
+	        width: 100px;
+	        height: 100px;
+	        border: 2px solid gray;
+	        margin: 5px;
+	}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script type="text/javascript">
+function log(message){
+	var li = $("<li></li>");
+	li.text(message);
+	$("#response").append(li);
+}
+
+function getRandom(min,max){
+	return Math.floor(Math.random() * max) + min;
+}
+function fillUp(input){
+	var horses = [];
+	for(var i=0; i < 25; i++){
+		var element = { "name": "horse:" + i,
+						"speed": input[i]
+					  };
+		if ( typeof input[i] === 'undefined'){
+			element.speed = 0;
+		}
+		horses.push(element);
+	}
+	return horses;
+}
+
+function raceThem(horses){
+   
+	return horses.sort(function(a,b) {
+           return b.speed - a.speed;
+    });
+    
+}
+function firstRace(groups){
+	var candidates = [];
+	var group1 = groups.slice(0,5);
+	var group2 = groups.slice(5,10);
+	var group3 = groups.slice(10,15);
+	var group4 = groups.slice(15,20);
+	var group5 = groups.slice(20,25);
+
+
+	candidates.push(group1);
+	candidates.push(group2);
+	candidates.push(group3);
+	candidates.push(group4);
+	candidates.push(group5);
+
+	var top3 = [];
+	candidates.forEach(function(group){
+		var best = raceThem(group);
+		top3.push(best.slice(0,3));
+	});
+
+	return top3;
+}
+
+function findGrid(bag,key,index){
+	var gridElement = 0;
+	for(var i=0; i < bag.length; i++){
+		var arr = bag[i];
+		if (arr[0] === key){
+			gridElement = arr[index];
+		}	
+	}
+	return gridElement;
+}
+
+$(function(){
+	
+	if ( typeof Array.prototype.inArray != 'function' ){
+		
+		Array.prototype.inArray = function( needle ){
+
+	    	return Array(this).join(",").indexOf(needle) >-1;
+
+		}
+	}
+	
+	var speeds = [];
+	
+	while( speeds.length < 25){
+		var num = getRandom(2,100);
+		
+		if (! speeds.inArray(num))
+			speeds.push(num);
+	}
+	
+	$("#horses").val(speeds.join(','));
+
+	$("#go").on('click',function(){
+		var input = $("#horses").val();
+		var sinput = input.split(',');
+		var horses = fillUp(sinput);
+
+		var race5 = firstRace(horses); //25 horses;
+		
+		var elites = [];
+		for(var i=0; i < race5.length; i++){
+			var arr = race5[i];
+			elites.push(arr[0]);	
+		}
+
+		var race6 = raceThem(elites); // race the 5 winners (top of each group)
+		
+		var a1 = race6[0]; // the top horse overall.
+
+		var a2 = findGrid(race5,a1,1);
+		var a3 = findGrid(race5,a1,2);
+
+		var b1 = race6[1];
+		var b2 = findGrid(race5,b1,1);
+		var b3 = findGrid(race5,b1,2);
+
+		var c1 = race6[2];
+		var c2 = findGrid(race5,c1,1);
+		var c3 = findGrid(race5,c1,2);
+
+		var race7 = raceThem([a2,a3,b1,b2,c1]);
+
+		var horse1 = a1;
+		var horse2 = race7[0];
+		var horse3 = race7[1];
+
+		
+		log("#1:" + " " + horse1.name + "->" + horse1.speed);
+		log("#2:" + " " + horse2.name + "->" + horse2.speed);
+		log("#3:" + " " + horse3.name + "->" + horse3.speed);
+	
+
+	})
+});
+</script>
+</head>
+<body>
+<div class="container">
+	
+	<div><input type=text name="horses" id="horses" size="70"><button id="go">Go</button></div>
+    <br>
+	<ul id="response" class="eList"></ul>
+</div>
+</body>
+</html>
